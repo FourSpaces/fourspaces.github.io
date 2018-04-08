@@ -10,7 +10,7 @@ key: page-about
 
 Welcome to my blog! :earth_asia: :earth_africa: :earth_americas:
 
-My Name is Cheng Wei(You can also call me Kyle Cheng), I am a big date engineer working at ![zaoshu.com](https://www.zaoshu.io/index.html) in Beijing.
+My Name is Cheng Wei(You can also call me Kyle Cheng), I am a big date engineer working at [zaoshu.com](https://www.zaoshu.io/index.html) in Beijing.
 
 
 ## Skills
