@@ -5,8 +5,6 @@ key: 20180307
 tags: scrapy-redis scrapy-redis空跑 爬虫结束 python爬虫
 ---
 
-## Scrapy-Redis 空跑问题，redis_key链接跑完后，自动关闭爬虫
-
 ### 问题：
 - scrapy-redis框架中，reids存储的xxx:requests已经爬取完毕，但程序仍然一直运行，如何自动停止程序，结束空跑。
 
@@ -84,7 +82,11 @@ class RedisSpiderSmartIdleClosedExensions(object):
         # 否则不配置
         if not crawler.settings.getbool('MYEXT_ENABLED'):
             raise NotConfigured
-
+        
+        # 检查是否有 redis_key 关键字，没有则不部署扩展
+        if not 'redis_key' in crawler.spidercls.__dict__.keys():
+            raise NotConfigured('Only supports RedisSpider')
+        
         # 获取配置中的时间片个数，默认为360个，30分钟
         idle_number = crawler.settings.getint('IDLE_NUMBER', 360)
 
@@ -111,8 +113,8 @@ class RedisSpiderSmartIdleClosedExensions(object):
         self.idle_list.append(time.time())       # 每次触发 spider_idle时，记录下触发时间戳
         idle_list_len = len(self.idle_list)         # 获取当前已经连续触发的次数
 
-        # 判断 当前触发时间与上次触发时间 之间的间隔是否大于5秒，如果大于5秒，说明redis 中还有key
-        if idle_list_len > 2 and self.idle_list[-1] - self.idle_list[-2] > 6:
+        # 判断 当前触发，redis 中是否有数据，有数据说明，需要重新计数
+        if idle_list_len > 2 and spider.server.exists(spider.redis_key):
             self.idle_list = [self.idle_list[-1]]
 
         elif idle_list_len > self.idle_number:
